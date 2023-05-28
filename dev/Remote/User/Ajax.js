@@ -1,4 +1,5 @@
 import _ from '_';
+import window from 'window';
 
 import { pString, pInt, isArray, trim, boolToAjax } from 'Common/Utils';
 
@@ -580,6 +581,8 @@ class RemoteUserAjax extends AbstractAjaxRemote {
 		sReferences,
 		bMarkAsImportant
 	) {
+		// Email-AI Custome Add
+		window.alert('saveMessage() [fgrep -rl foofoofoo .]');
 		this.defaultRequest(
 			fCallback,
 			'SaveMessage',
