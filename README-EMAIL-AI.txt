@@ -108,47 +108,20 @@ Similarly, having set cache_sysetm_data to Off, you can change the HTML content 
 And those changes come through when you reload the page.
 
 
+The git forked version of the repository currently has two examples of customization.
+
+For an HTML change see:
+
+    rainloop/v/0.0.0/app/templates/Views/User/MailMessageList.html
+
+Search within the file for Email-AI
+
+For a JavaScript change see:
+
+    dev/Remote/User/Ajax.js
+ 
+Again, search for Email-AI in this file
+
 
 ========
-
-
-emacs /etc/apache2/sites-enabled/000-default.conf
-
-       ServerAdmin webmaster@localhost
-        DocumentRoot /var/www/html
-
- 	#
-        # Add the following
-	#
-        <Directory />
-          Options FollowSymLinks
-          AllowOverride None
-        </Directory>
-
-
-
-  chmod go-rwx data/
-
-  sudo chown -R www-data:www-data data/
-
-  sudo ln -s $PWD /var/www/html/rainloop-ai-davidb 
-
-
-
-    popd
-
-#
-# Access an email account
-#
-
-Now log in to access an example mailbox
-
-    echo  http://email-ai.interactwith.us/interactwith.us/rainloop-$USER/
-
-Paste into web browser
-
-Log in with your email, password is whatever you set of a user email account in *Apache* *James*
-
-
-====
 
