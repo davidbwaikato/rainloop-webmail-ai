@@ -582,7 +582,7 @@ class RemoteUserAjax extends AbstractAjaxRemote {
 		bMarkAsImportant
 	) {
 		// Email-AI Custome Add
-		window.alert('saveMessage() [fgrep -rl foofoofoo .]');
+	        window.console.log('saveMessage() [To find this line in the source code: fgrep -rl foofoofoo .]');
 		this.defaultRequest(
 			fCallback,
 			'SaveMessage',

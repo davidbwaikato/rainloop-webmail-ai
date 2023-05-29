@@ -252,6 +252,7 @@ class FolderListMailBoxUserView extends AbstractViewNext {
 	}
 
 	composeClick() {
+	    window.alert('FolderList::composeClick() foofoofoo');
 		if (Settings.capa(Capa.Composer)) {
 			showScreenPopup(require('View/Popup/Compose'));
 		}

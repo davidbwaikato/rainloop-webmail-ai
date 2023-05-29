@@ -394,6 +394,7 @@ class MessageListMailBoxUserView extends AbstractViewNext {
 	}
 
 	composeClick() {
+		//window.alert('MessageList::composeClick()');
 		if (Settings.capa(Capa.Composer)) {
 			showScreenPopup(require('View/Popup/Compose'));
 		}
