@@ -17,7 +17,13 @@ const lint = gulp.parallel(jsLint, cssLint);
 const buildState1 = gulp.parallel(js, css, vendors);
 const buildState2 = gulp.series(clean, assets, buildState1);
 
-const build = gulp.parallel(lint, buildState2);
+let build;
+if (process.env.NODE_ENV == "production") {
+    build = gulp.parallel(lint, buildState2);
+}
+else {
+    build = gulp.parallel(buildState2);
+}
 
 exports.css = css;
 exports.lint = lint;

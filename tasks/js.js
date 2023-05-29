@@ -96,4 +96,10 @@ const jsState3 = gulp.parallel(jsLibs, jsApp, jsAdmin);
 const jsState2 = gulp.series(jsClean, webpack, jsState3, jsMin);
 
 exports.jsLint = jsLint;
-exports.js = gulp.parallel(jsState1, jsState2);
+
+if (process.env.NODE_ENV == "production") {
+    exports.js = gulp.parallel(jsState1, jsState2);
+}
+else {
+    exports.js = gulp.parallel(jsState2);
+}
