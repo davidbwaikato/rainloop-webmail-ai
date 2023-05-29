@@ -447,6 +447,27 @@ class ComposePopupView extends AbstractViewNext {
 		}
 	}
 
+        // Email-AI
+    	@command((self) => self.canBeSentOrSaved())
+        textToSubjectLineCommand() {
+	    window.alert('textToSubjectLineCommand()');
+
+	    const subject = this.subject();
+	    const isHTML  = this.oEditor ? this.oEditor.isHtml() : false;
+	    const text    = this.oEditor ? this.oEditor.getData(true) : '';	    
+	    window.console.log('Subject line currently: ' + subject);
+	    window.console.log('Text currently        : ' + text);
+
+	    const document_pathname = document.location.pathname;
+	    const api_url = document_pathname.replace('rainloop-ai-','api-');
+
+	    // For details on using Jquery AJAX calls, see:
+	    //   https://www.w3schools.com/jquery/jquery_ajax_get_post.asp
+	    
+	    $.get(api_url,function() { window.alert('ajax get() called') });	    
+	}
+
+
 	@command((self) => self.canBeSentOrSaved())
 	saveCommand() {
 		if (!this.allowFolders) {

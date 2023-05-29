@@ -10,6 +10,12 @@
 				<span class="i18n btn-text hide-on-mobile" data-i18n="COMPOSE/BUTTON_SAVE"></span>
 			</a>
 
+			<!-- Email-AI -->
+			<a class="btn button-text-to-subjectline" data-bind="visible: allowFolders, command: textToSubjectLineCommand">
+				<span class="i18n btn-text hide-on-mobile">Autofill Subject</span>
+			</a>
+
+			
 			<a class="close-custom" data-tooltip-join="top" data-bind="click: tryToClosePopup, tooltip: 'COMPOSE/BUTTON_CANCEL'">&times;</a>
 			<a class="minimize-custom" data-tooltip-join="top" data-bind="click: skipCommand, tooltip: 'COMPOSE/BUTTON_MINIMIZE'"></a>
 
