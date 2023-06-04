@@ -511,6 +511,26 @@ class ComposePopupView extends AbstractViewNext {
 	    }, 'json');
 	}
 
+    @command((self) => self.canBeSentOrSaved())
+        grammifyEmailCommand() {
+            window.console.log('grammifyEmailCommand()');
+
+            const subject = this.subject();
+            const isHTML  = this.oEditor ? this.oEditor.isHtml() : false;
+            const text    = this.oEditor ? this.oEditor.getData(true) : '';
+
+            //Strip html                                                                                       
+            const tmp = document.createElement('div');
+            tmp.innerHTML = text;
+            const brElements = tmp.getElementsByTagName('br');
+            //Replacing <br> tags with new line                                                                
+            for(let i = 0; i < brElements.length; i++){
+                brElements[i].innerHTML = '\n'
+            }
+            const strippedText = tmp.innerText.trim();
+       
+        }
+	    
 	@command((self) => self.canBeSentOrSaved())
 	saveCommand() {
 		if (!this.allowFolders) {
