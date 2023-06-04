@@ -450,23 +450,66 @@ class ComposePopupView extends AbstractViewNext {
         // Email-AI
     	@command((self) => self.canBeSentOrSaved())
         textToSubjectLineCommand() {
-	    window.alert('textToSubjectLineCommand()');
-
+	    window.console.log('textToSubjectLineCommand()');
+	    
 	    const subject = this.subject();
 	    const isHTML  = this.oEditor ? this.oEditor.isHtml() : false;
-	    const text    = this.oEditor ? this.oEditor.getData(true) : '';	    
-	    window.console.log('Subject line currently: ' + subject);
-	    window.console.log('Text currently        : ' + text);
+	    const text    = this.oEditor ? this.oEditor.getData(true) : '';
 
+	    //Strip html
+	    const tmp = document.createElement('div');
+	    tmp.innerHTML = text;
+	    const brElements = tmp.getElementsByTagName('br');
+	    //Replacing <br> tags with new line
+	    for(let i = 0; i < brElements.length; i++){
+		brElements[i].innerHTML = '\n'
+	    }
+	    const strippedText = tmp.innerText.trim();
+
+	    if(strippedText == ""){
+		window.console.log("Email text is empty");
+		return;
+	    }
+	    
+	    const prompt = "Suggest a subject from this text: \n"
+	    const promptText = prompt + strippedText;
+	    
+	    window.console.log('Subject line currently: ' + subject);
+	    window.console.log('Text currently        : ' + strippedText);
+	    
 	    const document_pathname = document.location.pathname;
 	    const api_url = document_pathname.replace('rainloop-ai-','api-');
+	    //Appended URL for api-$USER/getInfo
+	    //const appended_url = api_url + "getInfo";
 
+	    //Appended URL for api-$USER/tldr
+	    //const appended_url = api_url + "tldr";
+
+	    //Appended URL for api-$USER/subject
+	    const appended_url = api_url + "subject";
+	
 	    // For details on using Jquery AJAX calls, see:
-	    //   https://www.w3schools.com/jquery/jquery_ajax_get_post.asp
+	    // https://www.w3schools.com/jquery/jquery_ajax_get_post.asp
 	    
-	    $.get(api_url,function() { window.alert('ajax get() called') });	    
-	}
+	    //Email-AI ajax get call that returns the jason from the /getInfo (also works with /tldr) url
+	    //$.get(appended_url, function(data) { window.console.log(data)}, 'json');
+	    $.post(appended_url, {text: promptText}, function(data) {
+		window.console.log("Prompt: " + prompt + " | Text: " + strippedText);
+		window.console.log(data);
 
+		//Turning the data into a acceptable string for the subject line
+		var suggestedSubject = data.info.Subject[0];
+		suggestedSubject = suggestedSubject.text.replace(/\n\nSubject: /, '');
+		//Case providing subject header:
+		//suggestedSubject = suggestedSubject.text.replace(/header/, '')
+		window.console.log(suggestedSubject);
+				
+		//query subject line field
+		var subjectInput = document.querySelector('input[data-bind*="textInput: subject"]');
+		//Set the subject input value to the suggested subject line
+		subjectInput.value = suggestedSubject;
+	    }, 'json');
+	}
 
 	@command((self) => self.canBeSentOrSaved())
 	saveCommand() {
