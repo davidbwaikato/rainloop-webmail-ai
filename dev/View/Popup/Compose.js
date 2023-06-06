@@ -312,17 +312,17 @@ class ComposePopupView extends AbstractViewNext {
 		this.saveMessageResponse = _.bind(this.saveMessageResponse, this);
 
 		Events.sub('interval.2m', () => {
-			if (
-				this.modalVisibility() &&
-				!FolderStore.draftFolderNotEnabled() &&
-				SettingsStore.allowDraftAutosave() &&
-				!this.isEmptyForm(false) &&
-				!this.saving() &&
-				!this.sending() &&
-				!this.savedError()
-			) {
-				this.saveCommand();
-			}
+		    if (
+			this.modalVisibility() &&
+			    !FolderStore.draftFolderNotEnabled() &&
+			    SettingsStore.allowDraftAutosave() &&
+			    !this.isEmptyForm(false) &&
+			    !this.saving() &&
+			    !this.sending() &&
+			    !this.savedError()
+		    ) {
+			this.saveCommand();
+		    }
 		});
 
 		this.showCc.subscribe(this.resizerTrigger);
@@ -470,6 +470,10 @@ class ComposePopupView extends AbstractViewNext {
 		window.console.log("Email text is empty");
 		return;
 	    }
+	    else if(strippedText.length < 20){
+		alert("Text is not long enough to provide an accurate subject line");
+                return;
+	    }
 	    
 	    const prompt = "Suggest a subject from this text: \n";
 	    const promptText = prompt + strippedText;
@@ -485,7 +489,7 @@ class ComposePopupView extends AbstractViewNext {
 	
 	    // For details on using Jquery AJAX calls, see:
 	    // https://www.w3schools.com/jquery/jquery_ajax_get_post.asp
-	    
+	   	    
 	    //Email-AI ajax get call that returns the jason from the /getInfo (also works with /tldr) url
 	    //$.get(appended_url, function(data) { window.console.log(data)}, 'json');
 	    $.post(appended_url, {text: promptText}, function(data) {
@@ -509,7 +513,6 @@ class ComposePopupView extends AbstractViewNext {
         grammifyEmailCommand() {
             window.console.log('grammifyEmailCommand()');
 
-            const subject = this.subject();
             const isHTML  = this.oEditor ? this.oEditor.isHtml() : false;
             const text    = this.oEditor ? this.oEditor.getData(true) : '';
 	    //Change URL
@@ -517,8 +520,8 @@ class ComposePopupView extends AbstractViewNext {
 	    const api_url = document_pathname.replace('rainloop-ai-','api-');
 	    const appended_url = api_url + "grammify";
 	    
-	    const prompt = "Correct all spelling mistakes in this text, keep the new lines: \n\n";
-	    
+	    const prompt = "Correct all spelling mistakes in this text, keeping all new lines: \n\n";
+	    	    
             //Strip html
             const tmp = document.createElement('div');
             tmp.innerHTML = text;
@@ -530,13 +533,20 @@ class ComposePopupView extends AbstractViewNext {
             const strippedText = tmp.innerText.trim();
 	    const promptText = prompt + strippedText;
 
+	    if(strippedText.length < 20){
+                alert("Text is not long enough to grammify");
+                return;
+            }
+	    
 	    $.post(appended_url, {text: promptText}, function(data){
 		window.console.log("Prompt: " + prompt + " | Text: " + strippedText);
                 window.console.log(data);
 
 		//Turning the data into a acceptable string for the subject line                               
                 var grammifiedText = data.info.text[0];
-                grammifiedText = grammifiedText.text.replace(/\n\n/g, '');
+		window.console.log(grammifiedText);
+                grammifiedText = grammifiedText.text.replace(/\n\n/, '').replace(/\n/g, '<br>');
+				
 		window.console.log(grammifiedText);
 
                 //query subject line field
