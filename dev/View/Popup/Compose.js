@@ -471,7 +471,7 @@ class ComposePopupView extends AbstractViewNext {
 		return;
 	    }
 	    
-	    const prompt = "Suggest a subject from this text: \n"
+	    const prompt = "Suggest a subject from this text: \n";
 	    const promptText = prompt + strippedText;
 	    
 	    window.console.log('Subject line currently: ' + subject);
@@ -479,12 +479,7 @@ class ComposePopupView extends AbstractViewNext {
 	    
 	    const document_pathname = document.location.pathname;
 	    const api_url = document_pathname.replace('rainloop-ai-','api-');
-	    //Appended URL for api-$USER/getInfo
-	    //const appended_url = api_url + "getInfo";
-
-	    //Appended URL for api-$USER/tldr
-	    //const appended_url = api_url + "tldr";
-
+	    
 	    //Appended URL for api-$USER/subject
 	    const appended_url = api_url + "subject";
 	
@@ -499,9 +494,7 @@ class ComposePopupView extends AbstractViewNext {
 
 		//Turning the data into a acceptable string for the subject line
 		var suggestedSubject = data.info.Subject[0];
-		suggestedSubject = suggestedSubject.text.replace(/\n\nSubject: /, '');
-		//Case providing subject header:
-		//suggestedSubject = suggestedSubject.text.replace(/header/, '')
+		suggestedSubject = suggestedSubject.text.replace(/\n\nSubject: /g, '');
 		window.console.log(suggestedSubject);
 				
 		//query subject line field
@@ -511,6 +504,7 @@ class ComposePopupView extends AbstractViewNext {
 	    }, 'json');
 	}
 
+    //Email-AI
     @command((self) => self.canBeSentOrSaved())
         grammifyEmailCommand() {
             window.console.log('grammifyEmailCommand()');
@@ -518,8 +512,14 @@ class ComposePopupView extends AbstractViewNext {
             const subject = this.subject();
             const isHTML  = this.oEditor ? this.oEditor.isHtml() : false;
             const text    = this.oEditor ? this.oEditor.getData(true) : '';
-
-            //Strip html                                                                                       
+	    //Change URL
+	    const document_pathname = document.location.pathname;
+	    const api_url = document_pathname.replace('rainloop-ai-','api-');
+	    const appended_url = api_url + "grammify";
+	    
+	    const prompt = "Correct all spelling mistakes in this text, keep the new lines: \n\n";
+	    
+            //Strip html
             const tmp = document.createElement('div');
             tmp.innerHTML = text;
             const brElements = tmp.getElementsByTagName('br');
@@ -528,7 +528,23 @@ class ComposePopupView extends AbstractViewNext {
                 brElements[i].innerHTML = '\n'
             }
             const strippedText = tmp.innerText.trim();
-       
+	    const promptText = prompt + strippedText;
+
+	    $.post(appended_url, {text: promptText}, function(data){
+		window.console.log("Prompt: " + prompt + " | Text: " + strippedText);
+                window.console.log(data);
+
+		//Turning the data into a acceptable string for the subject line                               
+                var grammifiedText = data.info.text[0];
+                grammifiedText = grammifiedText.text.replace(/\n\n/g, '');
+		window.console.log(grammifiedText);
+
+                //query subject line field
+                var textInput = document.querySelector('.cke_wysiwyg_div');
+                //Set the subject input value to the suggested subject line
+                textInput.innerHTML = grammifiedText;
+	    }, 'json')
+	    
         }
 	    
 	@command((self) => self.canBeSentOrSaved())
@@ -1307,23 +1323,31 @@ class ComposePopupView extends AbstractViewNext {
 		this.resizerTrigger();
 	}
 
-	tryToClosePopup() {
-		const PopupsAskViewModel = require('View/Popup/Ask');
-		if (!isPopupVisible(PopupsAskViewModel) && this.modalVisibility()) {
-			if (this.bSkipNextHide || (this.isEmptyForm() && !this.draftUid())) {
-				delegateRun(this, 'closeCommand');
-			} else {
-				showScreenPopup(PopupsAskViewModel, [
-					i18n('POPUPS_ASK/DESC_WANT_CLOSE_THIS_WINDOW'),
-					() => {
-						if (this.modalVisibility()) {
-							delegateRun(this, 'closeCommand');
-						}
-					}
-				]);
+    tryToClosePopup() {
+	const PopupsAskViewModel = require('View/Popup/Ask');
+	if (!isPopupVisible(PopupsAskViewModel) && this.modalVisibility()) {
+	    if (this.bSkipNextHide || (this.isEmptyForm() && !this.draftUid())) {
+		//query subject line field
+		var subjectInput = document.querySelector('input[data-bind*="textInput: subject"]');
+		//Set the subject input value to the suggested subject line
+		subjectInput.value = "";
+		delegateRun(this, 'closeCommand');
+	    } else {
+		showScreenPopup(PopupsAskViewModel, [
+		    i18n('POPUPS_ASK/DESC_WANT_CLOSE_THIS_WINDOW'),
+		    () => {
+			if (this.modalVisibility()) {
+			    //query subject line field
+			    var subjectInput = document.querySelector('input[data-bind*="textInput: subject"]');
+			    //Set the subject input value to the suggested subject line
+			    subjectInput.value = "";
+			    delegateRun(this, 'closeCommand');
 			}
-		}
+		    }
+		]);
+	    }
 	}
+    }
 
 	onBuild() {
 		this.initUploader();
